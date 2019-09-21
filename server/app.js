@@ -1,4 +1,7 @@
-import express from 'express';
+require('dotenv').config();
+require('./database/mongoose');
+
+const express = require('express')
 
 const app = express();
 
