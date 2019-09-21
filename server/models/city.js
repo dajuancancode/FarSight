@@ -9,9 +9,18 @@ const stateSchema = new Schema({
         type: Number,
         required: true,
     },
-    marketRate: {
+    marketGrowth: {
         type: Number,
         required: true,
     },
+    stateTax: {
+        type: Number,
+        required: true
+    },
+    costOfLiving: {
+        type: Number,
+        required: true
+    },
+    
 
 })
