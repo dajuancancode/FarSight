@@ -1,0 +1,22 @@
+{
+  "name": "FarSight",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.7.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/node": "^7.6.1",
+    "@babel/preset-env": "^7.6.0",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.2"
+  },
+  "scripts": {
+    "dev-start": "nodemon --exec babel-node server/app.js",
+    "test": "jest"
+  }
+}
