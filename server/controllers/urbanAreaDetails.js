@@ -1,5 +1,20 @@
 const axios = require('axios')
 const { getUrbanAreaID } = require('../utils/utilityFunctions')
+const { State } = require('../models/state')
+
+
+const createState = async (req, res) => {
+    const state = new State(req.body)
+    
+    try {
+      await state.save()
+      
+      res.status(201).send({state})
+    } catch (e) {
+        console.log(e)
+        res.status(400).send()
+    }
+  }
 
 const safetyDetail = async (req, res) => {
     const urbanAreaID = await getUrbanAreaID(req, res)
@@ -59,8 +74,10 @@ const taxationDetail = async (req, res) => {
     const taxationDetails = urbanAreaDetails[18].data
 
     const salesTax = (taxationDetails[3]["percent_value"]*100).toFixed(2)
+    const state = await State.findOne({ name: "Florida"})
+    const stateTax = state.stateTax.toFixed(2)
 
-    res.send({salesTax})
+    res.send({salesTax, stateTax})
 }
 
 const costOfLivingDetail = async (req, res) => {
@@ -112,5 +129,22 @@ const economyDetail = async (req, res) => {
 
     res.send({ gdpGrowthRate, gdpPerCapita })
 }
-module.exports = { safetyDetail, commuteDetail, educationDetail, taxationDetail, costOfLivingDetail, leisureDetail, economyDetail }
-//economyDetail
+const weatherDetail = async (req, res) => {
+    const urbanAreaID = await getUrbanAreaID(req, res)
+    
+    const urbanAreaDetailsUrl = `https://api.teleport.org/api/urban_areas/teleport:${urbanAreaID}/details/`
+    const {data: {categories: urbanAreaDetails}} = await axios({url: urbanAreaDetailsUrl, method: "get"})
+
+    const weatherDetails = urbanAreaDetails[2].data
+    
+    const avgDayLength = weatherDetails[0]["float_value"]
+    const avgNumOfClearDays = weatherDetails[1]["float_value"]
+    const avgNumOfRainyDays = weatherDetails[2]["float_value"]
+
+    const state = await State.findOne({name: `${req.params.state}`})
+    const averageWeather = state.weather
+
+    res.send({averageWeather, avgDayLength, avgNumOfClearDays, avgNumOfRainyDays})
+
+}
+module.exports = { weatherDetail, createState, safetyDetail, commuteDetail, educationDetail, taxationDetail, costOfLivingDetail, leisureDetail, economyDetail }

@@ -1,5 +1,6 @@
 const axios = require('axios')
 const { getUrbanAreaID } = require('../utils/utilityFunctions')
+const { NEWS_API_KEY } = process.env
 
 const viewArea = async(req, res) => {
     try {
@@ -15,7 +16,12 @@ const viewArea = async(req, res) => {
             delete category.color
             category["score_out_of_10"] = Math.floor(category["score_out_of_10"])
         })
-        res.send(urbanAreaScoresCategories)
+        
+        const location = encodeURIComponent(`${req.params.city}, ${req.params.state}`)
+        const newsURL = `https://newsapi.org/v2/everything?q=${location}&apiKey=${NEWS_API_KEY}&pageSize=4`
+        const {data : news} = await axios({url: newsURL, method:'get'})
+
+        res.send({ urbanAreaScoresCategories, news})
     } catch {
         res.send({err: 'Could not fetch data'})
     }
